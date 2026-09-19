@@ -3,45 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Your NT MLA</title>
+    <title>Contact Your NT MLA</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <main class="max-w-xl mx-auto px-4 py-16 w-full">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Find Your NT MLA</h1>
-            <p class="text-slate-600">Enter your Northern Territory postcode to find your Member of the Legislative Assembly.</p>
+    <main class="max-w-xl mx-auto px-4 py-12 w-full">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Contact Your NT MLA</h1>
+            <p class="text-slate-600">Enter your suburb, customize your message, and send.</p>
         </div>
 
-        <!-- Search Box Card -->
-        <div class="bg-white shadow-sm ring-1 ring-slate-900/5 rounded-2xl p-6 sm:p-8 mb-6">
-            <div class="space-y-4">
-                <div>
-                    <label for="postcode-input" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Postcode</label>
-                    <div class="relative">
-                        <input type="text" id="postcode-input" maxlength="4" placeholder="e.g. 0800, 0810, 0820" 
-                            class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg">
-                    </div>
-                </div>
-                <button onclick="lookupMLA()" class="w-full rounded-lg bg-indigo-600 px-3 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors">
-                    Search MLA
-                </button>
+        <!-- Input Card -->
+        <div class="bg-white shadow-sm ring-1 ring-slate-900/5 rounded-2xl p-6 sm:p-8 mb-6 space-y-4">
+            <div>
+                <label for="suburb-input" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Suburb</label>
+                <input type="text" id="suburb-input" placeholder="e.g. Darwin City, Nightcliff, Casuarina" 
+                    class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg">
             </div>
+
+            <div>
+                <label for="user-name" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Name</label>
+                <input type="text" id="user-name" placeholder="First and Last Name" oninput="updateMessagePreview()"
+                    class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-base">
+            </div>
+
+            <button onclick="lookupMLA()" class="w-full rounded-lg bg-indigo-600 px-3 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors">
+                Find MLA & Generate Message
+            </button>
         </div>
 
-        <!-- Result Area -->
-        <div id="result-container" class="hidden bg-white shadow-sm ring-1 ring-slate-900/5 rounded-2xl p-6 sm:p-8 transition-all">
-            <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-2">Your Territory Representative</h2>
-            <div id="mla-details" class="space-y-3">
-                <!-- Dynamically populated -->
+        <!-- Result & Email Draft Area -->
+        <div id="result-container" class="hidden bg-white shadow-sm ring-1 ring-slate-900/5 rounded-2xl p-6 sm:p-8 space-y-6 transition-all">
+            <!-- MLA Info Box -->
+            <div class="border-b border-slate-100 pb-4">
+                <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-1">Your Representative</h2>
+                <div id="mla-name" class="text-xl font-bold text-slate-900"></div>
+                <div id="mla-division" class="text-sm font-medium text-slate-500"></div>
+            </div>
+
+            <!-- Email Draft Box -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="font-medium text-slate-700">To:</span>
+                    <span id="display-email" class="text-indigo-600 font-medium"></span>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Message Preview:</label>
+                    <textarea id="email-body" rows="8" oninput="manualEdit()" class="block w-full rounded-lg border-0 p-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 text-sm focus:ring-2 focus:ring-indigo-600 leading-relaxed"></textarea>
+                </div>
+
+                <!-- Copy Actions -->
+                <div class="pt-2 flex flex-col sm:flex-row gap-3">
+                    <button onclick="copyEmailContent()" class="flex-1 rounded-lg bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors">
+                        📋 Copy Email Details
+                    </button>
+                    <a id="mailto-link" href="#" class="flex-1 rounded-lg bg-emerald-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition-colors">
+                        ✉️ Open in Mail App
+                    </a>
+                </div>
+                <p id="copy-feedback" class="text-center text-xs text-emerald-600 font-medium hidden">Copied to clipboard successfully!</p>
             </div>
         </div>
 
         <!-- Error Area -->
         <div id="error-container" class="hidden bg-red-50 ring-1 ring-red-200 rounded-2xl p-6 text-center text-red-700 text-sm">
-            Please enter a valid NT 4-digit postcode.
+            Please enter a valid NT suburb.
         </div>
     </main>
 
@@ -50,52 +79,117 @@
     </footer>
 
     <script>
-        // Sample database mapping NT postcodes to MLAs and their email addresses.
-        const mlaDatabase = {
-            "0800": { name: "MLA for Port Darwin", division: "Port Darwin", email: " electorate.portdarwin@nt.gov.au" },
-            "0810": { name: "MLA for Fannie Bay", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
-            "0812": { name: "MLA for Nightcliff", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
-            "0820": { name: "MLA for Casuarina / Sanderson", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
-            "0830": { name: "MLA for Brennan / Goyder", division: "Brennan", email: "electorate.brennan@nt.gov.au" },
-            "0870": { name: "MLA for Alice Springs", division: "Braitling / Araluen", email: "electorate.braitling@nt.gov.au" }
+        // Database mapping NT suburbs (lowercased for easy matching) to MLAs
+        const suburbDatabase = {
+            "darwin city": { name: "MLA for Port Darwin", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
+            "stuart park": { name: "MLA for Port Darwin", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
+            "larrakeyah": { name: "MLA for Port Darwin", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
+            "fannie bay": { name: "MLA for Fannie Bay", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
+            "the gardens": { name: "MLA for Fannie Bay", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
+            "parap": { name: "MLA for Fannie Bay", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
+            "nightcliff": { name: "MLA for Nightcliff", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
+            "millner": { name: "MLA for Nightcliff", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
+            "rapid creek": { name: "MLA for Nightcliff", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
+            "casuarina": { name: "MLA for Casuarina", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            "jangaline": { name: "MLA for Casuarina", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            "jeppe": { name: "MLA for Casuarina", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            "arap": { name: "MLA for Casuarina", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            "wagaman": { name: "MLA for Casuarina", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            "nakara": { name: "MLA for Casuarina", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            "brinkin": { name: "MLA for Casuarina", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            "brennan": { name: "MLA for Brennan", division: "Brennan", email: "electorate.brennan@nt.gov.au" },
+            "alice springs": { name: "MLA for Braitling", division: "Braitling", email: "electorate.braitling@nt.gov.au" }
         };
 
+        let currentActiveEmail = "";
+
+        function getTemplateText(userName) {
+            const nameToUse = userName.trim() ? userName.trim() : "[Your Name]";
+            return `Dear Member,
+
+I am writing to you today as my local representative to raise an important matter regarding our community and local services. 
+
+[Insert your specific issue or question here]
+
+Thank you for your time and attention to this matter. I look forward to your response.
+
+Sincerely,
+${nameToUse}`;
+        }
+
         function lookupMLA() {
-            const input = document.getElementById('postcode-input').value.trim();
+            const rawInput = document.getElementById('suburb-input').value.trim().toLowerCase();
+            const userName = document.getElementById('user-name').value;
             const resultContainer = document.getElementById('result-container');
             const errorContainer = document.getElementById('error-container');
-            const mlaDetails = document.getElementById('mla-details');
 
-            // Reset views
             resultContainer.classList.add('hidden');
             errorContainer.classList.add('hidden');
 
-            if (!input || input.length !== 4 || !input.startsWith('08')) {
-                errorContainer.innerText = "Please enter a valid 4-digit NT postcode starting with 08.";
+            if (!rawInput) {
+                errorContainer.innerText = "Please enter a suburb name.";
                 errorContainer.classList.remove('hidden');
                 return;
             }
 
-            const match = mlaDatabase[input];
+            const match = suburbDatabase[rawInput];
 
             if (match) {
-                mlaDetails.innerHTML = `
-                    <div class="text-xl font-bold text-slate-900">${match.name}</div>
-                    <div class="text-sm font-medium text-slate-500">Division of ${match.division}</div>
-                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-sm text-slate-600">Email Address:</span>
-                        <a href="mailto:${match.email.trim()}" class="text-indigo-600 font-medium hover:underline text-sm sm:text-base">${match.email.trim()}</a>
-                    </div>
-                `;
+                currentActiveEmail = match.email;
+                document.getElementById('mla-name').innerText = match.name;
+                document.getElementById('mla-division').innerText = `Division of ${match.division}`;
+                document.getElementById('display-email').innerText = match.email;
+                
+                // Set text area template
+                document.getElementById('email-body').value = getTemplateText(userName);
+
+                // Set mailto button link
+                const subject = encodeURIComponent("Constituent Inquiry");
+                const body = encodeURIComponent(document.getElementById('email-body').value);
+                document.getElementById('mailto-link').href = `mailto:${match.email}?subject=${subject}&body=${body}`;
+
                 resultContainer.classList.remove('hidden');
             } else {
-                errorContainer.innerText = `No direct match found for postcode ${input} in the sample dataset. Try 0800, 0810, or 0820.`;
+                errorContainer.innerText = `We couldn't find a direct match for "${document.getElementById('suburb-input').value}". Try typing Darwin City, Nightcliff, or Fannie Bay.`;
                 errorContainer.classList.remove('hidden');
             }
         }
 
+        function updateMessagePreview() {
+            const userName = document.getElementById('user-name').value;
+            const emailBox = document.getElementById('email-body');
+            if (!document.getElementById('result-container').classList.contains('hidden')) {
+                emailBox.value = getTemplateText(userName);
+                updateMailtoLink();
+            }
+        }
+
+        function manualEdit() {
+            updateMailtoLink();
+        }
+
+        function updateMailtoLink() {
+            const body = encodeURIComponent(document.getElementById('email-body').value);
+            const subject = encodeURIComponent("Constituent Inquiry");
+            if (currentActiveEmail) {
+                document.getElementById('mailto-link').href = `mailto:${currentActiveEmail}?subject=${subject}&body=${body}`;
+            }
+        }
+
+        function copyEmailContent() {
+            const email = currentActiveEmail;
+            const body = document.getElementById('email-body').value;
+            const fullText = `To: ${email}\n\n${body}`;
+
+            navigator.clipboard.writeText(fullText).then(() => {
+                const feedback = document.getElementById('copy-feedback');
+                feedback.classList.remove('hidden');
+                setTimeout(() => feedback.classList.add('hidden'), 3000);
+            });
+        }
+
         // Allow pressing 'Enter' to search
-        document.getElementById('postcode-input').addEventListener('keypress', function (e) {
+        document.getElementById('suburb-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 lookupMLA();
             }
