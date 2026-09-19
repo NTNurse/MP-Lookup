@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Your NT MLA</title>
+    <title>Contact Your NT MLA - Support NT Nurses & Midwives</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -11,8 +11,8 @@
 
     <main class="max-w-xl mx-auto px-4 py-12 w-full">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Contact Your NT MLA</h1>
-            <p class="text-slate-600">Type your suburb to find your representative, generate your message, and copy or send.</p>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Support NT Nurses & Midwives</h1>
+            <p class="text-slate-600">Type your suburb to find your local MLA and send your letter of support.</p>
         </div>
 
         <!-- Input Card -->
@@ -50,14 +50,14 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Message Preview:</label>
-                    <textarea id="email-body" rows="9" oninput="manualEdit()" class="block w-full rounded-lg border-0 p-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 text-sm focus:ring-2 focus:ring-indigo-600 leading-relaxed"></textarea>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Letter Preview:</label>
+                    <textarea id="email-body" rows="16" oninput="manualEdit()" class="block w-full rounded-lg border-0 p-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 text-sm focus:ring-2 focus:ring-indigo-600 leading-relaxed"></textarea>
                 </div>
 
                 <!-- Copy Actions -->
                 <div class="pt-2 flex flex-col sm:flex-row gap-3">
                     <button onclick="copyEmailContent()" class="flex-1 rounded-lg bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors">
-                        📋 Copy Email Details
+                        📋 Copy Letter Details
                     </button>
                     <a id="mailto-link" href="#" class="flex-1 rounded-lg bg-emerald-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition-colors">
                         ✉️ Open in Mail App
@@ -116,13 +116,25 @@
             
             return `Dear ${mlaToUse},
 
-I am writing to you today as my local representative for the Northern Territory Legislative Assembly to raise an important matter regarding our community and local services. 
+I write to request your support for the Nurses and Midwives in the Northern Territory who work for NT Health. Our voices come from the frontline of healthcare. Every day, nurses and midwives across the Northern Territory provide essential care to Territorians in hospitals, clinics, remote communities, aged care facilities and other health settings. We see the challenges, understand the risks, and know what is needed to deliver safe, high-quality care. 
 
-[Insert your specific issue or question here]
+You were elected to represent Territorians and to help build a Territory where people can live, work, raise their families and access the healthcare they deserve.
 
-Thank you for your time and attention to this matter. I look forward to your response.
+When nurses and midwives raise concerns, we do so not only on behalf of our profession, but on behalf of the Territorians who depend on us, the patients, families and communities that we serve.
 
-Sincerely,
+Our workforce is under significant strain. Nurses and midwives are exhausted, experiencing increasing levels of burnout, and working in an environment where workforce shortages continue to impact the delivery of safe and sustainable care. Simply put, there are not enough nurses and midwives to meet the growing healthcare needs of Territorians.
+
+The Northern Territory Public Sector Nurses and Midwives Enterprise Agreement has expired. The current offer made by the Northern Territory Government falls well short of what is needed to attract and retain the nursing and midwifery workforce required to meet future demand.
+
+This is about more than pay. It is about ensuring Territorians have access to safe, quality healthcare delivered by a workforce that is adequately staffed, supported and valued. It is about maintaining the sustainability of our health system and ensuring that nurses and midwives can continue to provide the standard of care the community expects and deserves.
+
+The decisions made today will have a lasting impact on the future of healthcare in the Northern Territory. We are asking you, as our elected representative, to act and to stand with NT nurses and midwives and demand a significantly better offer to the Nurses and Midwives of the NT. 
+
+We want you to ask the Chief Minister for a clear answer: What will this Government do to address the Nursing and Midwifery workforce needs of the Territory?
+
+And I ask that you report that answer back to me, a proud member in your jurisdiction who voted in the best interests of Territorians, and who cares for Territorians every day.
+
+Yours sincerely,
 ${nameToUse}`;
         }
 
@@ -184,7 +196,7 @@ ${nameToUse}`;
 
         function updateMailtoLink() {
             const body = encodeURIComponent(document.getElementById('email-body').value);
-            const subject = encodeURIComponent("Constituent Inquiry");
+            const subject = encodeURIComponent("Northern Territory Nurses and Midwives Need Your Support");
             if (currentActiveMatch) {
                 document.getElementById('mailto-link').href = `mailto:${currentActiveMatch.email}?subject=${subject}&body=${body}`;
             }
