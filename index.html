@@ -12,7 +12,7 @@
     <main class="max-w-xl mx-auto px-4 py-12 w-full">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Support NT Nurses & Midwives</h1>
-            <p class="text-slate-600">Type your suburb to find your local MLA and send your letter of support.</p>
+            <p class="text-slate-600">Type your suburb, add a quick personal note, and send your letter.</p>
         </div>
 
         <!-- Input Card -->
@@ -30,6 +30,13 @@
                 <label for="user-name" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Name</label>
                 <input type="text" id="user-name" placeholder="First and Last Name" oninput="updateMessagePreview()"
                     class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-base">
+            </div>
+
+            <div>
+                <label for="personal-note" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Personal Reason (Optional)</label>
+                <input type="text" id="personal-note" placeholder="e.g. As a nurse at RDH, I see this every day..." oninput="updateMessagePreview()"
+                    class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-base">
+                <p class="text-xs text-slate-500 mt-1">This will automatically insert into the letter body.</p>
             </div>
         </div>
 
@@ -50,8 +57,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Letter Preview:</label>
-                    <textarea id="email-body" rows="16" oninput="manualEdit()" class="block w-full rounded-lg border-0 p-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 text-sm focus:ring-2 focus:ring-indigo-600 leading-relaxed"></textarea>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Letter Preview (Fully Editable):</label>
+                    <textarea id="email-body" rows="20" oninput="manualEdit()" class="block w-full rounded-lg border-0 p-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 text-sm focus:ring-2 focus:ring-indigo-600 leading-relaxed"></textarea>
                 </div>
 
                 <!-- Copy Actions -->
@@ -78,7 +85,6 @@
     </footer>
 
     <script>
-        // Accurate database matching NT suburbs to their current MLAs and divisions
         const ntSuburbs = [
             { suburb: "Darwin City", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
             { suburb: "Larrakeyah", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
@@ -110,29 +116,28 @@
 
         let currentActiveMatch = null;
 
-        function getTemplateText(mlaName, userName) {
+        function getTemplateText(mlaName, userName, personalNote) {
             const mlaToUse = mlaName ? mlaName : "[MLA Name]";
             const nameToUse = userName.trim() ? userName.trim() : "[Your Name]";
+            const customAddin = personalNote.trim() ? `\n\n${personalNote.trim()}` : "";
             
             return `Dear ${mlaToUse},
 
-I write to request your support for the Nurses and Midwives in the Northern Territory who work for NT Health. Our voices come from the frontline of healthcare. Every day, nurses and midwives across the Northern Territory provide essential care to Territorians in hospitals, clinics, remote communities, aged care facilities and other health settings. We see the challenges, understand the risks, and know what is needed to deliver safe, high-quality care. 
+I write to you today as a resident of your electorate to ask for your urgent support for the nurses and midwives who work for NT Health.
 
-You were elected to represent Territorians and to help build a Territory where people can live, work, raise their families and access the healthcare they deserve.
+Every day, Territorians rely on nurses and midwives in our hospitals, local clinics, remote communities, and aged care facilities. As a member of the community, I want to know that if I, my family, or my neighbors need medical care, a skilled and fully supported healthcare team will be there.${customAddin}
 
-When nurses and midwives raise concerns, we do so not only on behalf of our profession, but on behalf of the Territorians who depend on us, the patients, families and communities that we serve.
+Unfortunately, it is clear that our frontline health workforce is under severe strain. We hear reports—and see the reality—of exhausted nurses, burnout, and critical staff shortages. Simply put, there are not enough nurses and midwives to meet the growing healthcare needs of our community, which puts patient safety and the future of our health system at risk.
 
-Our workforce is under significant strain. Nurses and midwives are exhausted, experiencing increasing levels of burnout, and working in an environment where workforce shortages continue to impact the delivery of safe and sustainable care. Simply put, there are not enough nurses and midwives to meet the growing healthcare needs of Territorians.
+The Northern Territory Public Sector Nurses and Midwives Enterprise Agreement has expired, and the current government offer falls well short of what is required to attract and retain the staff we desperately need.
 
-The Northern Territory Public Sector Nurses and Midwives Enterprise Agreement has expired. The current offer made by the Northern Territory Government falls well short of what is needed to attract and retain the nursing and midwifery workforce required to meet future demand.
+This is about much more than pay; it is about community survival and safety. We need a workforce that is adequately staffed, supported, and valued so they can continue to care for us when we are most vulnerable.
 
-This is about more than pay. It is about ensuring Territorians have access to safe, quality healthcare delivered by a workforce that is adequately staffed, supported and valued. It is about maintaining the sustainability of our health system and ensuring that nurses and midwives can continue to provide the standard of care the community expects and deserves.
+You were elected to represent this community and help build a Territory where families can thrive and access the healthcare they deserve. We are asking you to stand with NT nurses and midwives and demand a significantly better offer from the Government.
 
-The decisions made today will have a lasting impact on the future of healthcare in the Northern Territory. We are asking you, as our elected representative, to act and to stand with NT nurses and midwives and demand a significantly better offer to the Nurses and Midwives of the NT. 
+I ask you to take action by asking the Chief Minister a clear question: What will this Government do to address the urgent nursing and midwifery workforce needs of the Territory?
 
-We want you to ask the Chief Minister for a clear answer: What will this Government do to address the Nursing and Midwifery workforce needs of the Territory?
-
-And I ask that you report that answer back to me, a proud member in your jurisdiction who voted in the best interests of Territorians, and who cares for Territorians every day.
+Please let me know your personal stance on this issue, and report back on the answer you receive from the Chief Minister.
 
 Yours sincerely,
 ${nameToUse}`;
@@ -174,18 +179,17 @@ ${nameToUse}`;
             document.getElementById('mla-division').innerText = `Division of ${match.division} (${match.suburb})`;
             document.getElementById('display-email').innerText = match.email;
 
-            const userName = document.getElementById('user-name').value;
-            document.getElementById('email-body').value = getTemplateText(match.mla, userName);
-
-            updateMailtoLink();
+            updateMessagePreview();
             document.getElementById('result-container').classList.remove('hidden');
         }
 
         function updateMessagePreview() {
             const userName = document.getElementById('user-name').value;
+            const personalNote = document.getElementById('personal-note').value;
             const emailBox = document.getElementById('email-body');
+            
             if (currentActiveMatch && !document.getElementById('result-container').classList.contains('hidden')) {
-                emailBox.value = getTemplateText(currentActiveMatch.mla, userName);
+                emailBox.value = getTemplateText(currentActiveMatch.mla, userName, personalNote);
                 updateMailtoLink();
             }
         }
@@ -196,7 +200,7 @@ ${nameToUse}`;
 
         function updateMailtoLink() {
             const body = encodeURIComponent(document.getElementById('email-body').value);
-            const subject = encodeURIComponent("Northern Territory Nurses and Midwives Need Your Support");
+            const subject = encodeURIComponent("Constituent Concern: Support for Northern Territory Nurses and Midwives");
             if (currentActiveMatch) {
                 document.getElementById('mailto-link').href = `mailto:${currentActiveMatch.email}?subject=${subject}&body=${body}`;
             }
