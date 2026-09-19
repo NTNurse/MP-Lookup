@@ -12,24 +12,18 @@
     <main class="max-w-xl mx-auto px-4 py-12 w-full">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Contact Your NT MLA</h1>
-            <p class="text-slate-600">Enter your postcode, choose your suburb, and contact your representative.</p>
+            <p class="text-slate-600">Type your suburb to find your representative, generate your message, and copy or send.</p>
         </div>
 
         <!-- Input Card -->
-        <div class="bg-white shadow-sm ring-1 ring-slate-900/5 rounded-2xl p-6 sm:p-8 mb-6 space-y-4">
+        <div class="bg-white shadow-sm ring-1 ring-slate-900/5 rounded-2xl p-6 sm:p-8 mb-6 space-y-4 relative">
             <div>
-                <label for="postcode-input" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Postcode</label>
-                <input type="text" id="postcode-input" maxlength="4" placeholder="e.g. 0800, 0810, 0820" oninput="handlePostcodeChange()"
+                <label for="suburb-input" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Suburb</label>
+                <input type="text" id="suburb-input" placeholder="Start typing suburb (e.g. Darwin City, Nightcliff...)" oninput="filterSuburbs()" autocomplete="off"
                     class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg">
-            </div>
-
-            <!-- Suburb Dropdown (Appears when postcode matches) -->
-            <div id="suburb-wrapper" class="hidden">
-                <label for="suburb-select" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Select Your Suburb</label>
-                <select id="suburb-select" onchange="onSuburbSelected()"
-                    class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-base bg-white">
-                    <option value="">-- Choose your suburb --</option>
-                </select>
+                
+                <!-- Dynamic Suburb Suggestions Dropdown -->
+                <div id="suggestions-box" class="hidden mt-1 bg-white shadow-lg rounded-lg ring-1 ring-slate-900/5 max-h-48 overflow-y-auto absolute z-10 w-full left-0 right-0 px-6"></div>
             </div>
 
             <div>
@@ -57,7 +51,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Message Preview:</label>
-                    <textarea id="email-body" rows="8" oninput="manualEdit()" class="block w-full rounded-lg border-0 p-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 text-sm focus:ring-2 focus:ring-indigo-600 leading-relaxed"></textarea>
+                    <textarea id="email-body" rows="9" oninput="manualEdit()" class="block w-full rounded-lg border-0 p-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 text-sm focus:ring-2 focus:ring-indigo-600 leading-relaxed"></textarea>
                 </div>
 
                 <!-- Copy Actions -->
@@ -75,7 +69,7 @@
 
         <!-- Error Area -->
         <div id="error-container" class="hidden bg-red-50 ring-1 ring-red-200 rounded-2xl p-6 text-center text-red-700 text-sm">
-            Please enter a valid 4-digit NT postcode (e.g. 0800, 0810, 0820).
+            Please select a valid suburb from the suggestion list.
         </div>
     </main>
 
@@ -84,41 +78,45 @@
     </footer>
 
     <script>
-        // Database mapping postcodes to their possible suburbs and corresponding MLA
-        const postcodeDatabase = {
-            "0800": {
-                suburbs: ["Darwin City", "Larrakeyah", "Stuart Park", "The Gardens", "Cullen Bay"],
-                mla: { name: "MLA for Port Darwin", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" }
-            },
-            "0810": {
-                suburbs: ["Fannie Bay", "Parap", "Minnie Park"],
-                mla: { name: "MLA for Fannie Bay", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" }
-            },
-            "0812": {
-                suburbs: ["Nightcliff", "Millner", "Rapid Creek"],
-                mla: { name: "MLA for Nightcliff", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" }
-            },
-            "0820": {
-                suburbs: ["Casuarina", "Wagaman", "Nakara", "Brinkin", "Tiwi", "Muirhead"],
-                mla: { name: "MLA for Casuarina", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" }
-            },
-            "0830": {
-                suburbs: ["Palmerston (Selected Suburbs)", "Brennan", "Gray", "Driver"],
-                mla: { name: "MLA for Brennan", division: "Brennan", email: "electorate.brennan@nt.gov.au" }
-            },
-            "0870": {
-                suburbs: ["Alice Springs (Town)", "Braitling", "The Gap", "Anzac Hill"],
-                mla: { name: "MLA for Braitling", division: "Braitling", email: "electorate.braitling@nt.gov.au" }
-            }
-        };
+        // Accurate database matching NT suburbs to their current MLAs and divisions
+        const ntSuburbs = [
+            { suburb: "Darwin City", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
+            { suburb: "Larrakeyah", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
+            { suburb: "Stuart Park", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
+            { suburb: "The Gardens", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
+            { suburb: "Cullen Bay", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
+            
+            { suburb: "Fannie Bay", mla: "Laurie Zio", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
+            { suburb: "Parap", mla: "Laurie Zio", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
+            { suburb: "Minnie Park", mla: "Laurie Zio", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
+            
+            { suburb: "Nightcliff", mla: "Ed Smelt", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
+            { suburb: "Millner", mla: "Ed Smelt", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
+            { suburb: "Rapid Creek", mla: "Ed Smelt", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
+            
+            { suburb: "Casuarina", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            { suburb: "Wagaman", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            { suburb: "Nakara", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            { suburb: "Brinkin", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            { suburb: "Tiwi", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            { suburb: "Muirhead", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            
+            { suburb: "Palmerston", mla: "Clinton Howe", division: "Drysdale / Brennan", email: "electorate.drysdale@nt.gov.au" },
+            { suburb: "Gray", mla: "Marie-Clare Boothby", division: "Brennan", email: "electorate.brennan@nt.gov.au" },
+            { suburb: "Driver", mla: "Marie-Clare Boothby", division: "Brennan", email: "electorate.brennan@nt.gov.au" },
+            
+            { suburb: "Alice Springs", mla: "Joshua Burgoyne", division: "Braitling", email: "electorate.braitling@nt.gov.au" }
+        ];
 
-        let currentActiveEmail = "";
+        let currentActiveMatch = null;
 
-        function getTemplateText(userName) {
+        function getTemplateText(mlaName, userName) {
+            const mlaToUse = mlaName ? mlaName : "[MLA Name]";
             const nameToUse = userName.trim() ? userName.trim() : "[Your Name]";
-            return `Dear Member,
+            
+            return `Dear ${mlaToUse},
 
-I am writing to you today as my local representative to raise an important matter regarding our community and local services. 
+I am writing to you today as my local representative for the Northern Territory Legislative Assembly to raise an important matter regarding our community and local services. 
 
 [Insert your specific issue or question here]
 
@@ -128,71 +126,54 @@ Sincerely,
 ${nameToUse}`;
         }
 
-        function handlePostcodeChange() {
-            const postcode = document.getElementById('postcode-input').value.trim();
-            const suburbWrapper = document.getElementById('suburb-wrapper');
-            const suburbSelect = document.getElementById('suburb-select');
-            const resultContainer = document.getElementById('result-container');
-            const errorContainer = document.getElementById('error-container');
+        function filterSuburbs() {
+            const input = document.getElementById('suburb-input').value.toLowerCase().trim();
+            const suggestionsBox = document.getElementById('suggestions-box');
+            
+            suggestionsBox.innerHTML = '';
+            if (!input) {
+                suggestionsBox.classList.add('hidden');
+                return;
+            }
 
-            // Reset UI states
-            suburbWrapper.classList.add('hidden');
-            resultContainer.classList.add('hidden');
-            errorContainer.classList.add('hidden');
-            suburbSelect.innerHTML = '<option value="">-- Choose your suburb --</option>';
+            const matches = ntSuburbs.filter(item => item.suburb.toLowerCase().includes(input));
 
-            if (postcode.length === 4) {
-                if (postcodeDatabase[postcode]) {
-                    const data = postcodeDatabase[postcode];
-                    data.suburbs.forEach(suburb => {
-                        const opt = document.createElement('option');
-                        opt.value = suburb;
-                        opt.textContent = suburb;
-                        suburbSelect.appendChild(opt);
-                    });
-                    suburbWrapper.classList.remove('hidden');
-                } else {
-                    errorContainer.innerText = `No suburbs found for postcode ${postcode}. Try 0800, 0810, 0812, or 0820.`;
-                    errorContainer.classList.remove('hidden');
-                }
+            if (matches.length > 0) {
+                matches.forEach(match => {
+                    const div = document.createElement('div');
+                    div.className = 'py-2 px-3 hover:bg-slate-100 cursor-pointer text-sm text-slate-700 rounded';
+                    div.innerHTML = `<strong>${match.suburb}</strong> <span class="text-xs text-slate-400">(${match.mla} - ${match.division})</span>`;
+                    div.onclick = () => selectSuburb(match);
+                    suggestionsBox.appendChild(div);
+                });
+                suggestionsBox.classList.remove('hidden');
+            } else {
+                suggestionsBox.classList.add('hidden');
             }
         }
 
-        function onSuburbSelected() {
-            const postcode = document.getElementById('postcode-input').value.trim();
-            const selectedSuburb = document.getElementById('suburb-select').value;
+        function selectSuburb(match) {
+            currentActiveMatch = match;
+            document.getElementById('suburb-input').value = match.suburb;
+            document.getElementById('suggestions-box').classList.add('hidden');
+            document.getElementById('error-container').classList.add('hidden');
+
+            document.getElementById('mla-name').innerText = match.mla;
+            document.getElementById('mla-division').innerText = `Division of ${match.division} (${match.suburb})`;
+            document.getElementById('display-email').innerText = match.email;
+
             const userName = document.getElementById('user-name').value;
-            const resultContainer = document.getElementById('result-container');
+            document.getElementById('email-body').value = getTemplateText(match.mla, userName);
 
-            resultContainer.classList.add('hidden');
-
-            if (!selectedSuburb) return;
-
-            const data = postcodeDatabase[postcode];
-            if (data && data.mla) {
-                const match = data.mla;
-                currentActiveEmail = match.email;
-                document.getElementById('mla-name').innerText = match.name;
-                document.getElementById('mla-division').innerText = `Division of ${match.division} (${selectedSuburb})`;
-                document.getElementById('display-email').innerText = match.email;
-                
-                // Set text area template
-                document.getElementById('email-body').value = getTemplateText(userName);
-
-                // Set mailto link
-                const subject = encodeURIComponent("Constituent Inquiry from " + selectedSuburb);
-                const body = encodeURIComponent(document.getElementById('email-body').value);
-                document.getElementById('mailto-link').href = `mailto:${match.email}?subject=${subject}&body=${body}`;
-
-                resultContainer.classList.remove('hidden');
-            }
+            updateMailtoLink();
+            document.getElementById('result-container').classList.remove('hidden');
         }
 
         function updateMessagePreview() {
             const userName = document.getElementById('user-name').value;
             const emailBox = document.getElementById('email-body');
-            if (!document.getElementById('result-container').classList.contains('hidden')) {
-                emailBox.value = getTemplateText(userName);
+            if (currentActiveMatch && !document.getElementById('result-container').classList.contains('hidden')) {
+                emailBox.value = getTemplateText(currentActiveMatch.mla, userName);
                 updateMailtoLink();
             }
         }
@@ -204,13 +185,14 @@ ${nameToUse}`;
         function updateMailtoLink() {
             const body = encodeURIComponent(document.getElementById('email-body').value);
             const subject = encodeURIComponent("Constituent Inquiry");
-            if (currentActiveEmail) {
-                document.getElementById('mailto-link').href = `mailto:${currentActiveEmail}?subject=${subject}&body=${body}`;
+            if (currentActiveMatch) {
+                document.getElementById('mailto-link').href = `mailto:${currentActiveMatch.email}?subject=${subject}&body=${body}`;
             }
         }
 
         function copyEmailContent() {
-            const email = currentActiveEmail;
+            if (!currentActiveMatch) return;
+            const email = currentActiveMatch.email;
             const body = document.getElementById('email-body').value;
             const fullText = `To: ${email}\n\n${body}`;
 
