@@ -12,16 +12,16 @@
     <main class="max-w-xl mx-auto px-4 py-12 w-full">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Support NT Nurses & Midwives</h1>
-            <p class="text-slate-600">Type your suburb, add a quick personal note, and send your letter.</p>
+            <p class="text-slate-600">Type your suburb to find your correct electorate, add a personal P.S., and send your letter.</p>
         </div>
 
         <!-- Input Card -->
         <div class="bg-white shadow-sm ring-1 ring-slate-900/5 rounded-2xl p-6 sm:p-8 mb-6 space-y-4 relative">
             <div>
                 <label for="suburb-input" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Suburb</label>
-                <input type="text" id="suburb-input" placeholder="Start typing suburb (e.g. Darwin City, Nightcliff...)" oninput="filterSuburbs()" autocomplete="off"
+                <input type="text" id="suburb-input" placeholder="Start typing suburb (e.g. Malak, Stuart Park, Parap...)" oninput="filterSuburbs()" autocomplete="off"
                     class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg">
-                
+
                 <!-- Dynamic Suburb Suggestions Dropdown -->
                 <div id="suggestions-box" class="hidden mt-1 bg-white shadow-lg rounded-lg ring-1 ring-slate-900/5 max-h-48 overflow-y-auto absolute z-10 w-full left-0 right-0 px-6"></div>
             </div>
@@ -33,10 +33,10 @@
             </div>
 
             <div>
-                <label for="personal-note" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Personal Reason (Optional)</label>
-                <input type="text" id="personal-note" placeholder="e.g. As a Territorian I respect our nurses..." oninput="updateMessagePreview()"
+                <label for="personal-note" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Your Personal Note / P.S. (Optional)</label>
+                <input type="text" id="personal-note" placeholder="e.g. As a nurse at RDH, I see this daily..." oninput="updateMessagePreview()"
                     class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-base">
-                <p class="text-xs text-slate-500 mt-1">This will automatically insert into the letter body.</p>
+                <p class="text-xs text-slate-500 mt-1">This will automatically appear as a P.S. at the bottom of the letter.</p>
             </div>
         </div>
 
@@ -47,6 +47,12 @@
                 <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-1">Your Representative</h2>
                 <div id="mla-name" class="text-xl font-bold text-slate-900"></div>
                 <div id="mla-division" class="text-sm font-medium text-slate-500"></div>
+                <!-- Shown only for suburbs that are split between electorates -->
+                <p id="partial-note" class="hidden mt-3 rounded-lg bg-amber-50 ring-1 ring-amber-200 p-3 text-xs text-amber-800">
+                    Part of this suburb sits in a neighbouring electorate. Check your street address with the
+                    <a href="https://ntec.nt.gov.au/" target="_blank" rel="noopener" class="underline font-medium">NT Electoral Commission's "Find my electorate" tool</a>
+                    to be sure you're writing to the right MLA.
+                </p>
             </div>
 
             <!-- Email Draft Box -->
@@ -76,7 +82,9 @@
 
         <!-- Error Area -->
         <div id="error-container" class="hidden bg-red-50 ring-1 ring-red-200 rounded-2xl p-6 text-center text-red-700 text-sm">
-            Please select a valid suburb from the suggestion list.
+            We couldn't find that suburb in our list. Check the spelling, or use the
+            <a href="https://ntec.nt.gov.au/" target="_blank" rel="noopener" class="underline font-medium">NT Electoral Commission's "Find my electorate" tool</a>
+            to look up your electorate.
         </div>
     </main>
 
@@ -85,47 +93,69 @@
     </footer>
 
     <script>
-        const ntSuburbs = [
-            { suburb: "Darwin City", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
-            { suburb: "Larrakeyah", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
-            { suburb: "Stuart Park", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
-            { suburb: "The Gardens", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
-            { suburb: "Cullen Bay", mla: "Hon Robyn Cahill OAM", division: "Port Darwin", email: "electorate.portdarwin@nt.gov.au" },
-            
-            { suburb: "Fannie Bay", mla: "Laurie Zio", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
-            { suburb: "Parap", mla: "Laurie Zio", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
-            { suburb: "Minnie Park", mla: "Laurie Zio", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
-            
-            { suburb: "Nightcliff", mla: "Ed Smelt", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
-            { suburb: "Millner", mla: "Ed Smelt", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
-            { suburb: "Rapid Creek", mla: "Ed Smelt", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
-            
-            { suburb: "Casuarina", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
-            { suburb: "Wagaman", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
-            { suburb: "Nakara", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
-            { suburb: "Brinkin", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
-            { suburb: "Tiwi", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
-            { suburb: "Muirhead", mla: "Khoda Patel", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
-            
-            { suburb: "Palmerston", mla: "Clinton Howe", division: "Drysdale / Brennan", email: "electorate.drysdale@nt.gov.au" },
-            { suburb: "Gray", mla: "Marie-Clare Boothby", division: "Brennan", email: "electorate.brennan@nt.gov.au" },
-            { suburb: "Driver", mla: "Marie-Clare Boothby", division: "Brennan", email: "electorate.brennan@nt.gov.au" },
-            
-            { suburb: "Alice Springs", mla: "Joshua Burgoyne", division: "Braitling", email: "electorate.braitling@nt.gov.au" }
+        // Suburb-to-division mapping based on the NT Electoral Commission division
+        // descriptions for the boundaries in force since the 2024 Territory election
+        // (2023 redistribution).
+        //
+        //   full    = the whole suburb sits in this division
+        //   partial = only part of the suburb sits in this division (the suburb is
+        //             split between electorates, so the user is warned to double-check)
+        //
+        // Electorate office emails follow the official format Electorate.<DivisionName>@nt.gov.au
+        // (spaces removed), per the Legislative Assembly electorate office list (June 2026).
+        const divisionData = [
+            // ---- Darwin ----
+            { division: "Port Darwin", full: ["Darwin City", "Larrakeyah", "Cullen Bay"], partial: ["Stuart Park"] },
+            { division: "Fannie Bay",  full: ["Fannie Bay", "Parap", "East Point", "The Gardens", "Ludmilla"], partial: ["Coconut Grove"] },
+            { division: "Fong Lim",    full: ["Woolner", "Bayview", "The Narrows", "Winnellie", "Coonawarra", "Hidden Valley", "Wishart", "Eaton", "Northcrest"], partial: ["Stuart Park", "Berrimah"] },
+            { division: "Nightcliff",  full: ["Nightcliff", "Rapid Creek"], partial: ["Coconut Grove"] },
+            { division: "Johnston",    full: ["Jingili", "Millner", "Moil"], partial: ["Alawa"] },
+            { division: "Casuarina",   full: ["Casuarina", "Brinkin", "Nakara", "Tiwi", "Lyons", "Lee Point"], partial: ["Alawa", "Muirhead"] },
+            { division: "Wanguri",     full: ["Wanguri", "Leanyer", "Buffalo Creek"], partial: ["Muirhead"] },
+            { division: "Sanderson",   full: ["Anula", "Marrara", "Wagaman", "Wulagi"], partial: ["Berrimah"] },
+            { division: "Karama",      full: ["Karama", "Malak", "Knuckey Lagoon", "Holmes"], partial: [] },
+
+            // ---- Palmerston ----
+            { division: "Drysdale",    full: ["Palmerston City", "Driver", "Gray", "Gunn"], partial: [] },
+            { division: "Brennan",     full: ["Bakewell", "Rosebery", "Mitchell"], partial: ["Zuccoli"] },
+            { division: "Blain",       full: ["Bellamack", "Moulden", "Woodroffe", "Archer"], partial: [] },
+            { division: "Spillett",    full: ["Durack", "Farrar", "Yarrawonga", "Johnston (Palmerston)"], partial: ["Zuccoli"] },
+
+            // ---- Rural Darwin ----
+            { division: "Goyder",      full: ["Bees Creek", "Virginia", "Noonamah", "Acacia Hills", "Black Jungle", "Lambells Lagoon", "Lloyd Creek", "Marrakai", "Middle Point", "Mount Bundey"], partial: ["Humpty Doo", "Coolalinga"] },
+            { division: "Nelson",      full: ["Howard Springs", "McMinns Lagoon"], partial: ["Humpty Doo", "Coolalinga"] },
+
+            // ---- Alice Springs ----
+            { division: "Braitling",   full: ["Braitling", "Ciccone", "East Side", "Sadadeen"], partial: ["Alice Springs (town centre)"] },
+            { division: "Araluen",     full: ["Araluen", "Desert Springs", "The Gap", "Gillen"], partial: [] },
+
+            // ---- Regional centres ----
+            { division: "Katherine",   full: ["Katherine"], partial: [] },
+            { division: "Barkly",      full: ["Tennant Creek"], partial: [] },
+            { division: "Mulka",       full: ["Nhulunbuy"], partial: [] },
+            { division: "Arafura",     full: ["Jabiru", "Maningrida"], partial: [] }
         ];
+
+        // Flatten into one entry per suburb/division pair
+        const ntSuburbs = [];
+        divisionData.forEach(d => {
+            const email = `Electorate.${d.division.replace(/\s+/g, '')}@nt.gov.au`;
+            d.full.forEach(s => ntSuburbs.push({ suburb: s, division: d.division, email, partial: false }));
+            d.partial.forEach(s => ntSuburbs.push({ suburb: s, division: d.division, email, partial: true }));
+        });
 
         let currentActiveMatch = null;
 
-        function getTemplateText(mlaName, userName, personalNote) {
-            const mlaToUse = mlaName ? mlaName : "[MLA Name]";
+        function getTemplateText(divisionName, userName, personalNote) {
+            const divisionToUse = divisionName ? `Member for ${divisionName}` : "[Electorate Representative]";
             const nameToUse = userName.trim() ? userName.trim() : "[Your Name]";
-            const customAddin = personalNote.trim() ? `\n\n${personalNote.trim()}` : "";
-            
-            return `Dear ${mlaToUse},
+            const psText = personalNote.trim() ? `\n\nP.S. ${personalNote.trim()}` : "";
+
+            return `Dear ${divisionToUse},
 
 I write to you today as a resident of your electorate to ask for your urgent support for the nurses and midwives who work for NT Health.
 
-Every day, Territorians rely on nurses and midwives in our hospitals, local clinics, remote communities, and aged care facilities. As a member of the community, I want to know that if I, my family, or my neighbors need medical care, a skilled and fully supported healthcare team will be there.${customAddin}
+Every day, Territorians rely on nurses and midwives in our hospitals, local clinics, remote communities, and aged care facilities. As a member of the community, I want to know that if I, my family, or my neighbours need medical care, a skilled and fully supported healthcare team will be there.
 
 Unfortunately, it is clear that our frontline health workforce is under severe strain. We hear reports—and see the reality—of exhausted nurses, burnout, and critical staff shortages. Simply put, there are not enough nurses and midwives to meet the growing healthcare needs of our community, which puts patient safety and the future of our health system at risk.
 
@@ -140,32 +170,58 @@ I ask you to take action by asking the Chief Minister a clear question: What wil
 Please let me know your personal stance on this issue, and report back on the answer you receive from the Chief Minister.
 
 Yours sincerely,
-${nameToUse}`;
+${nameToUse}${psText}`;
         }
 
         function filterSuburbs() {
             const input = document.getElementById('suburb-input').value.toLowerCase().trim();
             const suggestionsBox = document.getElementById('suggestions-box');
-            
+            const errorBox = document.getElementById('error-container');
+
+            // Typing again invalidates any earlier selection
+            currentActiveMatch = null;
+            document.getElementById('result-container').classList.add('hidden');
+
             suggestionsBox.innerHTML = '';
+            errorBox.classList.add('hidden');
+
             if (!input) {
                 suggestionsBox.classList.add('hidden');
                 return;
             }
 
-            const matches = ntSuburbs.filter(item => item.suburb.toLowerCase().includes(input));
+            // Suburbs that start with the typed text come first, then alphabetical
+            const matches = ntSuburbs
+                .filter(item => item.suburb.toLowerCase().includes(input))
+                .sort((a, b) => {
+                    const aStarts = a.suburb.toLowerCase().startsWith(input) ? 0 : 1;
+                    const bStarts = b.suburb.toLowerCase().startsWith(input) ? 0 : 1;
+                    return aStarts - bStarts || a.suburb.localeCompare(b.suburb) || a.division.localeCompare(b.division);
+                });
 
             if (matches.length > 0) {
                 matches.forEach(match => {
                     const div = document.createElement('div');
                     div.className = 'py-2 px-3 hover:bg-slate-100 cursor-pointer text-sm text-slate-700 rounded';
-                    div.innerHTML = `<strong>${match.suburb}</strong> <span class="text-xs text-slate-400">(${match.mla} - ${match.division})</span>`;
+
+                    const name = document.createElement('strong');
+                    name.textContent = match.suburb;
+
+                    const label = document.createElement('span');
+                    label.className = 'text-xs text-slate-400';
+                    label.textContent = match.partial
+                        ? ` (Division of ${match.division}, part of suburb)`
+                        : ` (Division of ${match.division})`;
+
+                    div.appendChild(name);
+                    div.appendChild(label);
                     div.onclick = () => selectSuburb(match);
                     suggestionsBox.appendChild(div);
                 });
                 suggestionsBox.classList.remove('hidden');
             } else {
                 suggestionsBox.classList.add('hidden');
+                errorBox.classList.remove('hidden');
             }
         }
 
@@ -175,21 +231,23 @@ ${nameToUse}`;
             document.getElementById('suggestions-box').classList.add('hidden');
             document.getElementById('error-container').classList.add('hidden');
 
-            document.getElementById('mla-name').innerText = match.mla;
-            document.getElementById('mla-division').innerText = `Division of ${match.division} (${match.suburb})`;
+            document.getElementById('mla-name').innerText = `Member for ${match.division}`;
+            document.getElementById('mla-division').innerText = `Electoral Division of ${match.division} (${match.suburb})`;
             document.getElementById('display-email').innerText = match.email;
+            document.getElementById('partial-note').classList.toggle('hidden', !match.partial);
 
-            updateMessagePreview();
+            // Reveal the container first so updateMessagePreview() will populate the letter
             document.getElementById('result-container').classList.remove('hidden');
+            updateMessagePreview();
         }
 
         function updateMessagePreview() {
             const userName = document.getElementById('user-name').value;
             const personalNote = document.getElementById('personal-note').value;
             const emailBox = document.getElementById('email-body');
-            
+
             if (currentActiveMatch && !document.getElementById('result-container').classList.contains('hidden')) {
-                emailBox.value = getTemplateText(currentActiveMatch.mla, userName, personalNote);
+                emailBox.value = getTemplateText(currentActiveMatch.division, userName, personalNote);
                 updateMailtoLink();
             }
         }
