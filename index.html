@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Your Local MP</title>
+    <title>Find Your NT MLA</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -11,8 +11,8 @@
 
     <main class="max-w-xl mx-auto px-4 py-16 w-full">
         <div class="text-center mb-10">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Find Your Local MP</h1>
-            <p class="text-slate-600">Enter your Australian postcode to find your representative's contact details.</p>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">Find Your NT MLA</h1>
+            <p class="text-slate-600">Enter your Northern Territory postcode to find your Member of the Legislative Assembly.</p>
         </div>
 
         <!-- Search Box Card -->
@@ -21,27 +21,27 @@
                 <div>
                     <label for="postcode-input" class="block text-sm font-medium leading-6 text-slate-900 mb-1">Postcode</label>
                     <div class="relative">
-                        <input type="text" id="postcode-input" maxlength="4" placeholder="e.g. 0800, 2000, 3000" 
+                        <input type="text" id="postcode-input" maxlength="4" placeholder="e.g. 0800, 0810, 0820" 
                             class="block w-full rounded-lg border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-lg">
                     </div>
                 </div>
-                <button onclick="lookupMP()" class="w-full rounded-lg bg-indigo-600 px-3 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors">
-                    Search MP
+                <button onclick="lookupMLA()" class="w-full rounded-lg bg-indigo-600 px-3 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors">
+                    Search MLA
                 </button>
             </div>
         </div>
 
         <!-- Result Area -->
         <div id="result-container" class="hidden bg-white shadow-sm ring-1 ring-slate-900/5 rounded-2xl p-6 sm:p-8 transition-all">
-            <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-2">Your Representative</h2>
-            <div id="mp-details" class="space-y-3">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-2">Your Territory Representative</h2>
+            <div id="mla-details" class="space-y-3">
                 <!-- Dynamically populated -->
             </div>
         </div>
 
         <!-- Error Area -->
         <div id="error-container" class="hidden bg-red-50 ring-1 ring-red-200 rounded-2xl p-6 text-center text-red-700 text-sm">
-            Please enter a valid 4-digit Australian postcode, or we couldn't find a match for that postcode.
+            Please enter a valid NT 4-digit postcode.
         </div>
     </main>
 
@@ -50,49 +50,46 @@
     </footer>
 
     <script>
-        // Sample database mapping postcodes to Federal MPs and their electorate offices.
-        // You can expand this dictionary or replace it with a full dataset/API later.
-        const mpDatabase = {
-            "0800": { name: "Luke Gosling", electorate: "Solomon (NT)", email: "luke.gosling.mp@aph.gov.au" },
-            "0810": { name: "Luke Gosling", electorate: "Solomon (NT)", email: "luke.gosling.mp@aph.gov.au" },
-            "0820": { name: "Marion Scrymgour", electorate: "Lingiari (NT)", email: "marion.scrymgour.mp@aph.gov.au" },
-            "2000": { name: "Mandana Pham / Sydney Office", electorate: "Sydney (NSW)", email: "member.sydney@parliament.nsw.gov.au" }, // Example federal/state placeholder
-            "3000": { name: "Adam Bandt", electorate: "Melbourne (VIC)", email: "adam.bandt.mp@aph.gov.au" },
-            "4000": { name: "Stephen Jones / Brisbane equivalent", electorate: "Brisbane (QLD)", email: "brisbane.mp@aph.gov.au" },
-            "5000": { name: "Sarah Champion / Adelaide equivalent", electorate: "Adelaide (SA)", email: "adelaide@aph.gov.au" }
-            // Add more postcodes here as needed
+        // Sample database mapping NT postcodes to MLAs and their email addresses.
+        const mlaDatabase = {
+            "0800": { name: "MLA for Port Darwin", division: "Port Darwin", email: " electorate.portdarwin@nt.gov.au" },
+            "0810": { name: "MLA for Fannie Bay", division: "Fannie Bay", email: "electorate.fanniebay@nt.gov.au" },
+            "0812": { name: "MLA for Nightcliff", division: "Nightcliff", email: "electorate.nightcliff@nt.gov.au" },
+            "0820": { name: "MLA for Casuarina / Sanderson", division: "Casuarina", email: "electorate.casuarina@nt.gov.au" },
+            "0830": { name: "MLA for Brennan / Goyder", division: "Brennan", email: "electorate.brennan@nt.gov.au" },
+            "0870": { name: "MLA for Alice Springs", division: "Braitling / Araluen", email: "electorate.braitling@nt.gov.au" }
         };
 
-        function lookupMP() {
+        function lookupMLA() {
             const input = document.getElementById('postcode-input').value.trim();
             const resultContainer = document.getElementById('result-container');
             const errorContainer = document.getElementById('error-container');
-            const mpDetails = document.getElementById('mp-details');
+            const mlaDetails = document.getElementById('mla-details');
 
             // Reset views
             resultContainer.classList.add('hidden');
             errorContainer.classList.add('hidden');
 
-            if (!input || input.length !== 4 || isNaN(input)) {
+            if (!input || input.length !== 4 || !input.startsWith('08')) {
+                errorContainer.innerText = "Please enter a valid 4-digit NT postcode starting with 08.";
                 errorContainer.classList.remove('hidden');
                 return;
             }
 
-            const match = mpDatabase[input];
+            const match = mlaDatabase[input];
 
             if (match) {
-                mpDetails.innerHTML = `
+                mlaDetails.innerHTML = `
                     <div class="text-xl font-bold text-slate-900">${match.name}</div>
-                    <div class="text-sm font-medium text-slate-500">${match.electorate}</div>
+                    <div class="text-sm font-medium text-slate-500">Division of ${match.division}</div>
                     <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                         <span class="text-sm text-slate-600">Email Address:</span>
-                        <a href="mailto:${match.email}" class="text-indigo-600 font-medium hover:underline text-sm sm:text-base">${match.email}</a>
+                        <a href="mailto:${match.email.trim()}" class="text-indigo-600 font-medium hover:underline text-sm sm:text-base">${match.email.trim()}</a>
                     </div>
                 `;
                 resultContainer.classList.remove('hidden');
             } else {
-                // Fallback demo response if postcode isn't explicitly hardcoded above
-                errorContainer.innerText = `No direct match found for postcode ${input} in the sample dataset. Try 0800 or 3000.`;
+                errorContainer.innerText = `No direct match found for postcode ${input} in the sample dataset. Try 0800, 0810, or 0820.`;
                 errorContainer.classList.remove('hidden');
             }
         }
@@ -100,7 +97,7 @@
         // Allow pressing 'Enter' to search
         document.getElementById('postcode-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
-                lookupMP();
+                lookupMLA();
             }
         });
     </script>
